@@ -4,12 +4,16 @@ import numpy as np
 import scipy as sp
 import h5py
 
-#os.environ["MKL_NUM_THREADS"] = '9' # export MKL_NUM_THREADS=1
-
-
-# f is the file object of the HDF5 file
-# q counts which thickness we're at for correct data storage
-def get_data(f, thickness_index, n_matrices, dL, data_blocks, cascade_method):
+def get_data(f, data_blocks, cascade_method):
+    '''
+    Performs polarimetric calculations of different blocks of the scattering matrices and saves data.
+    
+    Input parameters:
+    'f': the hdf5 file where the data is saved. Used to extract the scattering matrices
+    'data_blocks': list of which blocks of the scattering matrix data will be saved for
+    'cascade_method': either 'S' or 'M' depending on whether scattering or transfer matrices are being used
+    '''
+    
    
     matrices = f['Random Matrices']['Matrices']
     _, N, _ = np.shape(f['Random Matrices']['Single Pool M'])
@@ -19,8 +23,6 @@ def get_data(f, thickness_index, n_matrices, dL, data_blocks, cascade_method):
     data = {}
     data['Transmission'] = np.zeros((n_times), dtype=float)
     data['Tau'] = np.zeros((2*n_modes*n_times), dtype=np.complex128)
-    data['n_matrices'] = n_matrices
-    data['Thickness'] = dL*n_matrices
         
     for block in data_blocks:
         block_str = str(block)
@@ -109,7 +111,7 @@ def main():
     #########################
     
     # root is the directory in which all of the data is stored (should be existing folder)
-    root = r'/home/niall/simulations/'
+    root = r'/home/niall/simulations/data/'
         
     # name of the hdf5 file in which the data is saved
     hdf5_filename = 'data.hdf5'
@@ -607,13 +609,13 @@ def main():
             with h5py.File(pathname + hdf5_filename, 'r+') as f:
              
                 print('Calculating statistics...')
-                new_data = get_data(f, thickness_index, n_matrices, dL, data_blocks, cascade_method)            
+                new_data = get_data(f, data_blocks, cascade_method)            
 
                 print('Saving statistics...')
                 data_group = f['Data']
                 data_group['Transmission'][thickness_index] = new_data['Transmission']
-                data_group['n_matrices'][thickness_index] = new_data['n_matrices']
-                data_group['Thicknesses'][thickness_index] = new_data['Thickness']
+                data_group['n_matrices'][thickness_index] = n_matrices
+                data_group['Thicknesses'][thickness_index] = n_matrices*dL
                 data_group['Tau'][thickness_index] = new_data['Tau']
                
                 for mode in data_blocks:
