@@ -2,7 +2,7 @@
 
 ---
 
-This code reproduces the data used in *[Random matrix theory of polarized light scattering in disordered media](https://arxiv.org/abs/2205.09423), N. Byrnes and M.R. Foreman, 2022*.
+This code reproduces the data used in *[Random matrix theory of polarized light scattering in disordered media](https://doi.org/10.1080/17455030.2022.2153305), Waves Random Complex Media 36, 249–277 (2026).*.
 
 ---
 
